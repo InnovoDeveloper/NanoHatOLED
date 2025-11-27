@@ -33,10 +33,13 @@ Modern, systemd-compatible NanoHat OLED driver for FriendlyELEC boards running D
 ### First-Time Setup (with package installation)
 
 ```bash
-# Clone repository (with submodules)
+# Clone repository
 cd ~
 git clone --recursive https://github.com/InnovoDeveloper/NanoHatOLED.git
 cd NanoHatOLED
+
+# Note: If you forget --recursive, the installer will automatically
+# initialize the BakeBit submodule for you
 
 # Run installation (installs packages, compiles daemon, sets up service)
 sudo ./install-local.sh

@@ -2,8 +2,8 @@
 set -e
 
 echo "========================================"
-echo "NanoHat OLED Local Installation Script"
-echo "For Debian Trixie/Bookworm"
+echo "NanoHat OLED Installation Script"
+echo "For Debian Trixie/Bookworm (9 steps)"
 echo "========================================"
 
 # Get the directory where script is located
@@ -16,7 +16,7 @@ if [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 
-echo "[1/8] Installing system dependencies..."
+echo "[1/9] Installing system dependencies..."
 apt-get update
 apt-get install -y \
     build-essential \
@@ -34,11 +34,24 @@ if [ ! -f /usr/bin/python ]; then
     ln -sf /usr/bin/python3 /usr/bin/python
 fi
 
-echo "[2/8] Upgrading Pillow for compatibility..."
+echo "[2/9] Upgrading Pillow for compatibility..."
 pip3 install pillow --upgrade --break-system-packages 2>/dev/null || \
 pip3 install pillow --upgrade 2>/dev/null || true
 
-echo "[3/8] Fixing WiringNP for modern GCC..."
+echo "[3/9] Checking BakeBit submodule..."
+# Initialize submodule if not present (user forgot --recursive)
+if [ ! -d "$SCRIPT_DIR/BakeBit/Software" ]; then
+    echo "BakeBit submodule not found, initializing..."
+    cd "$SCRIPT_DIR"
+    git submodule update --init --recursive
+    if [ $? -ne 0 ]; then
+        echo "ERROR: Failed to initialize BakeBit submodule"
+        echo "Please run: git submodule update --init --recursive"
+        exit 1
+    fi
+fi
+
+echo "[4/9] Fixing WiringNP for modern GCC..."
 if [ -d "$SCRIPT_DIR/BakeBit/WiringNP" ]; then
     cd "$SCRIPT_DIR/BakeBit/WiringNP/wiringPi"
     
@@ -92,7 +105,7 @@ else
     exit 1
 fi
 
-echo "[4/8] Building WiringNP library..."
+echo "[5/8] Building WiringNP library..."
 cd "$SCRIPT_DIR/BakeBit/WiringNP"
 
 # Build the library (ignore gpio utility errors)
@@ -187,7 +200,7 @@ gcc Source/daemonize.c Source/main.c -lrt -lpthread -o NanoHatOLED || {
 
 echo "✓ Daemon compiled successfully"
 
-echo "[8/8] Creating systemd service..."
+echo "[9/9] Creating systemd service..."
 
 cat > /etc/systemd/system/nanohat-oled.service << SVCEOF
 [Unit]
