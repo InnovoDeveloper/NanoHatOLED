@@ -40,15 +40,24 @@ pip3 install pillow --upgrade 2>/dev/null || true
 
 echo "[3/9] Checking BakeBit submodule..."
 # Initialize submodule if not present (user forgot --recursive)
-if [ ! -d "$SCRIPT_DIR/BakeBit/Software" ]; then
-    echo "BakeBit submodule not found, initializing..."
+if [ ! -d "$SCRIPT_DIR/BakeBit/Software" ] || [ ! -d "$SCRIPT_DIR/BakeBit/WiringNP" ]; then
+    echo "BakeBit submodule not found or incomplete, initializing..."
     cd "$SCRIPT_DIR"
     git submodule update --init --recursive
     if [ $? -ne 0 ]; then
         echo "ERROR: Failed to initialize BakeBit submodule"
-        echo "Please run: git submodule update --init --recursive"
+        echo "Please manually run: git submodule update --init --recursive"
         exit 1
     fi
+    # Verify it worked
+    if [ ! -d "$SCRIPT_DIR/BakeBit/WiringNP" ]; then
+        echo "ERROR: BakeBit submodule initialization failed"
+        echo "BakeBit/WiringNP directory still missing"
+        exit 1
+    fi
+    echo "✓ BakeBit submodule initialized successfully"
+else
+    echo "✓ BakeBit submodule already present"
 fi
 
 echo "[4/9] Fixing WiringNP for modern GCC..."
