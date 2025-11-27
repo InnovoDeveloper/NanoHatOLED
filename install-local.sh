@@ -114,7 +114,7 @@ else
     exit 1
 fi
 
-echo "[5/8] Building WiringNP library..."
+echo "[5/9] Building WiringNP library..."
 cd "$SCRIPT_DIR/BakeBit/WiringNP"
 
 # Build the library (ignore gpio utility errors)
@@ -140,7 +140,7 @@ else
     exit 1
 fi
 
-echo "[5/8] Fixing Python script for Pillow 10+..."
+echo "[6/9] Fixing Python script for Pillow 10+..."
 cd "$SCRIPT_DIR/BakeBit/Software/Python"
 
 # Backup original
@@ -182,7 +182,7 @@ except Exception as e:
     print(f"Warning: Could not apply fix: {e}")
 PYFIX
 
-echo "[6/8] Determining Python interpreter..."
+echo "[7/9] Determining Python interpreter..."
 cd "$SCRIPT_DIR"
 
 # Get actual Python3 interpreter name
@@ -199,7 +199,7 @@ if [ -f "$SCRIPT_DIR/Source/daemonize.h" ]; then
     sed -i "s|#define PYTHON3_INTERP.*|#define PYTHON3_INTERP \"$PY3_INTERP\"|" "$SCRIPT_DIR/Source/daemonize.h"
 fi
 
-echo "[7/8] Compiling NanoHatOLED daemon..."
+echo "[8/9] Compiling NanoHatOLED daemon..."
 cd "$SCRIPT_DIR"
 
 gcc Source/daemonize.c Source/main.c -lrt -lpthread -o NanoHatOLED || {
